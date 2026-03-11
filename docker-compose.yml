@@ -4,7 +4,7 @@ services:
     container_name: ut-ambassador-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ambassador_ai
+      POSTGRES_DB: ambassador_connect_demo
       POSTGRES_USER: ambassador_ai
       POSTGRES_PASSWORD: ambassador_ai
     ports:
@@ -24,7 +24,49 @@ services:
     volumes:
       - chroma_data:/chroma/chroma
 
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: ut-ambassador-api
+    restart: unless-stopped
+    environment:
+      APP_NAME: UT Ambassador Connect API
+      APP_ENV: development
+      SECRET_KEY: hackathon-secret
+      DATABASE_URL: sqlite:///./ambassador_ai.db
+      CHROMA_HOST: ""
+      CHROMA_PORT: 8000
+      CHROMA_COLLECTION: knowledge_chunks
+      OPENAI_API_KEY: ""
+      OPENAI_CHAT_MODEL: gpt-4.1-mini
+      OPENAI_EMBEDDING_MODEL: text-embedding-3-small
+      AUTO_SEED: "true"
+      DEFAULT_TIMEZONE: America/Chicago
+    depends_on:
+      - postgres
+      - chroma
+    ports:
+      - "8000:8000"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: ut-ambassador-web
+    restart: unless-stopped
+    environment:
+      API_BASE_URL: http://api:8000
+      NEXT_PUBLIC_API_BASE_URL: /api
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
 volumes:
   postgres_data:
   chroma_data:
+
+
+
 

@@ -5,13 +5,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import admin, ai, ambassadors, auth, me, meetings
 from app.core.config import get_settings
-from app.db.session import engine
-from app.models import Base
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    Base.metadata.create_all(bind=engine)
     if get_settings().auto_seed:
         from app.scripts.seed_demo import seed_demo_data
 
@@ -44,3 +41,6 @@ app.include_router(admin.router)
 @app.get("/health")
 def health_check() -> dict:
     return {"status": "ok"}
+
+
+

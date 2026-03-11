@@ -1,7 +1,7 @@
 from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import select
+from sqlalchemy import case, select
 from sqlalchemy.orm import Session, joinedload
 
 from app.api.dependencies import get_current_user, get_scheduling_service
@@ -24,7 +24,7 @@ def list_ambassadors(
         select(User, AmbassadorProfile)
         .join(AmbassadorProfile, AmbassadorProfile.user_id == User.id)
         .where(User.role == UserRole.ambassador)
-        .order_by(User.name)
+        .order_by(case((User.email == "sana.ambassador@utdemo.ai", 0), else_=1), User.name)
     ).all()
     return [present_ambassador_card(user, profile) for user, profile in rows]
 
@@ -61,4 +61,3 @@ def get_ambassador_availability(
     range_start = from_date or now
     range_end = to_date or (range_start + timedelta(days=14))
     return scheduling_service.get_availability_window(db, ambassador_id, range_start, range_end)
-

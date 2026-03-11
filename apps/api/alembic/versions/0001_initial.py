@@ -15,16 +15,12 @@ branch_labels = None
 depends_on = None
 
 
-user_role_enum = sa.Enum("student", "ambassador", "admin", name="userrole")
-meeting_status_enum = sa.Enum("pending", "confirmed", "declined", "cancelled", name="meetingstatus")
-meeting_type_enum = sa.Enum("virtual", "in_person", name="meetingtype")
+user_role_enum = sa.Enum("student", "ambassador", "admin", name="userrole", native_enum=False)
+meeting_status_enum = sa.Enum("pending", "confirmed", "declined", "cancelled", name="meetingstatus", native_enum=False)
+meeting_type_enum = sa.Enum("virtual", "in_person", name="meetingtype", native_enum=False)
 
 
 def upgrade() -> None:
-    bind = op.get_bind()
-    user_role_enum.create(bind, checkfirst=True)
-    meeting_status_enum.create(bind, checkfirst=True)
-    meeting_type_enum.create(bind, checkfirst=True)
 
     op.create_table(
         "users",
@@ -186,7 +182,7 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_users_email"), table_name="users")
     op.drop_table("users")
 
-    bind = op.get_bind()
-    meeting_type_enum.drop(bind, checkfirst=True)
-    meeting_status_enum.drop(bind, checkfirst=True)
-    user_role_enum.drop(bind, checkfirst=True)
+
+
+
+

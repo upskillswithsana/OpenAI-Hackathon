@@ -3,12 +3,11 @@ from zoneinfo import ZoneInfo
 
 from sqlalchemy import select
 
-from app.db.session import SessionLocal, engine
+from app.db.session import SessionLocal
 from app.models import (
     AmbassadorProfile,
     AvailabilityException,
     AvailabilityRule,
-    Base,
     KnowledgeDocument,
     Meeting,
     MeetingStatus,
@@ -93,11 +92,11 @@ DEMO_USERS = [
         },
     },
     {
-        "name": "Ananya Rao",
+        "name": "Krutika Kurup",
         "email": "ananya.ambassador@utdemo.ai",
         "role": UserRole.ambassador,
         "ambassador_profile": {
-            "program": "MSBA - McCombs School of Business",
+            "program": "MSITM - McCombs School of Business",
             "major": "Business Analytics",
             "graduation_year": 2026,
             "bio": "Supports students interested in analytics, internships, and transitioning from engineering.",
@@ -161,7 +160,7 @@ DEMO_USERS = [
         },
     },
     {
-        "name": "Rohan Malhotra",
+        "name": "Abhilash Tripathy",
         "email": "rohan.ambassador@utdemo.ai",
         "role": UserRole.ambassador,
         "ambassador_profile": {
@@ -309,7 +308,6 @@ def _next_weekday(target_weekday: int, hour: int) -> datetime:
 
 
 def seed_demo_data() -> None:
-    Base.metadata.create_all(bind=engine)
     knowledge_service = KnowledgeService()
 
     with SessionLocal() as db:
@@ -428,4 +426,7 @@ def seed_demo_data() -> None:
 
 if __name__ == "__main__":
     seed_demo_data()
+
+
+
 

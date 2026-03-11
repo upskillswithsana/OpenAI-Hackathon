@@ -1,0 +1,10 @@
+.git
+node_modules
+**/node_modules
+apps/api/.venv
+**/.venv
+**/.next
+**/.next-dev
+**/.open-next
+**/__pycache__
+**/*.pyc

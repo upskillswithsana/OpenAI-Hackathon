@@ -30,9 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
               <Link href="/" className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)] text-sm font-semibold text-white">
-                  UT
-                </div>
+                <div className="flex h-12 min-w-12 items-center justify-center rounded-2xl bg-[var(--accent)] px-2 text-[10px] font-semibold leading-tight text-white">UT Austin</div>
                 <div>
                   <div className="text-lg font-semibold tracking-tight text-[var(--ink)]">
                     Ambassador Connect
@@ -80,7 +78,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   </option>
                   {demoUsers.map((user) => (
                     <option key={user.id} value={user.email}>
-                      {user.name} · {roleLabel(user.role)}
+                      {user.name} - {roleLabel(user.role)}
                     </option>
                   ))}
                 </select>
@@ -94,4 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+
+
 
