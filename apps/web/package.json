@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NEXT_DIST_DIR=.next-build next build",
     "start": "next start",
-    "lint": "eslint . --ignore-pattern .next --ignore-pattern node_modules"
+    "lint": "eslint . --ignore-pattern .next --ignore-pattern .next-dev --ignore-pattern .next-build --ignore-pattern node_modules"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",

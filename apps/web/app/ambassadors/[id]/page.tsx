@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { MeetingCard } from "@/components/meeting-card";
 import { useSession } from "@/components/session-provider";
-import { ApiError, fetchAmbassador } from "@/lib/api";
-import type { AmbassadorDetail } from "@/lib/types";
+import { ApiError, fetchAmbassador, fetchMyMeetings } from "@/lib/api";
+import type { AmbassadorDetail, Meeting } from "@/lib/types";
 
 export default function AmbassadorProfilePage() {
   const params = useParams<{ id: string }>();
   const { session } = useSession();
   const [ambassador, setAmbassador] = useState<AmbassadorDetail | null>(null);
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -20,16 +22,21 @@ export default function AmbassadorProfilePage() {
     }
     const token = session.token;
     const ambassadorId = params.id;
+    const role = session.user.role;
 
     let disposed = false;
 
     async function loadAmbassador() {
       try {
-        const result = await fetchAmbassador(token, ambassadorId);
+        const [result, myMeetings] = await Promise.all([
+          fetchAmbassador(token, ambassadorId),
+          role === "student" ? fetchMyMeetings(token) : Promise.resolve([]),
+        ]);
         if (disposed) {
           return;
         }
         setAmbassador(result);
+        setMeetings(myMeetings);
         setError(null);
       } catch (value) {
         if (disposed) {
@@ -59,7 +66,22 @@ export default function AmbassadorProfilePage() {
       window.removeEventListener("focus", handleFocusRefresh);
       document.removeEventListener("visibilitychange", handleVisibilityRefresh);
     };
-  }, [params.id, session?.token]);
+  }, [params.id, session?.token, session?.user.role]);
+
+  const confirmedMeetings = useMemo(() => {
+    if (!ambassador || session?.user.role !== "student") {
+      return [];
+    }
+
+    return meetings
+      .filter(
+        (meeting) =>
+          meeting.ambassador_id === ambassador.user_id && meeting.status === "confirmed",
+      )
+      .sort((left, right) => {
+        return new Date(left.start_time).getTime() - new Date(right.start_time).getTime();
+      });
+  }, [ambassador, meetings, session?.user.role]);
 
   if (error) {
     return <div className="surface-card text-sm text-[#8d2c30]">{error}</div>;
@@ -126,21 +148,45 @@ export default function AmbassadorProfilePage() {
         </div>
       </section>
 
-      <aside className="surface-card">
-        <div className="section-kicker">Availability snapshot</div>
-        <div className="mt-6 space-y-3">
-          {ambassador.availability_summary.length ? (
-            ambassador.availability_summary.map((item) => (
-              <div key={item} className="rounded-[20px] border border-[var(--line)] bg-white/75 px-4 py-3 text-sm text-[var(--ink)]">
-                {item}
-              </div>
-            ))
-          ) : (
-            <p className="text-sm leading-6 text-[var(--muted)]">
-              This ambassador has not published recurring availability yet.
-            </p>
-          )}
-        </div>
+      <aside className="space-y-6">
+        <section className="surface-card">
+          <div className="section-kicker">Availability snapshot</div>
+          <div className="mt-6 space-y-3">
+            {ambassador.availability_summary.length ? (
+              ambassador.availability_summary.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[20px] border border-[var(--line)] bg-white/75 px-4 py-3 text-sm text-[var(--ink)]"
+                >
+                  {item}
+                </div>
+              ))
+            ) : (
+              <p className="text-sm leading-6 text-[var(--muted)]">
+                This ambassador has not published recurring availability yet.
+              </p>
+            )}
+          </div>
+        </section>
+
+        {session?.user.role === "student" ? (
+          <section className="surface-card">
+            <div className="section-kicker">Your confirmed meetings</div>
+            <h2 className="mt-5 text-2xl font-semibold text-[var(--ink)]">
+              Sessions with {ambassador.name}
+            </h2>
+            <div className="mt-6 space-y-4">
+              {confirmedMeetings.length ? (
+                confirmedMeetings.map((meeting) => <MeetingCard key={meeting.id} meeting={meeting} />)
+              ) : (
+                <p className="text-sm leading-6 text-[var(--muted)]">
+                  Once this ambassador confirms your request, the meeting will appear here with the
+                  final details.
+                </p>
+              )}
+            </div>
+          </section>
+        ) : null}
       </aside>
     </div>
   );

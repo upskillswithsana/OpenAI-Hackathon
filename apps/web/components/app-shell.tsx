@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/ask", label: "Ask AI" },
   { href: "/ambassadors", label: "Ambassadors" },
   { href: "/dashboard/ambassador", label: "Ambassador Desk" },
+  { href: "/meetings", label: "Planned Meetings" },
   { href: "/admin", label: "Admin Upload" },
 ];
 

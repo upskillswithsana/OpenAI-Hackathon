@@ -7,7 +7,13 @@ import { BookingCalendar } from "@/components/booking-calendar";
 import { MeetingCard } from "@/components/meeting-card";
 import { useSession } from "@/components/session-provider";
 import { ApiError, createMeeting, fetchAmbassador, fetchAvailability } from "@/lib/api";
-import type { AmbassadorDetail, AvailabilityWindow, Meeting, MeetingType } from "@/lib/types";
+import type {
+  AmbassadorDetail,
+  AvailabilitySlot,
+  AvailabilityWindow,
+  Meeting,
+  MeetingType,
+} from "@/lib/types";
 
 function rangeForCalendar() {
   const start = new Date();
@@ -21,7 +27,7 @@ export default function BookingPage() {
   const { session } = useSession();
   const [ambassador, setAmbassador] = useState<AmbassadorDetail | null>(null);
   const [availability, setAvailability] = useState<AvailabilityWindow | null>(null);
-  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(null);
   const [duration, setDuration] = useState(30);
   const [meetingType, setMeetingType] = useState<MeetingType>("virtual");
   const [location, setLocation] = useState("");
@@ -41,8 +47,7 @@ export default function BookingPage() {
       .then(([detail, window]) => {
         setAmbassador(detail);
         setAvailability(window);
-        const firstAvailable = window.slots.find((slot) => slot.state === "available");
-        setSelectedSlot(firstAvailable?.start_time ?? null);
+        setSelectedSlot(null);
       })
       .catch((value) => {
         const message = value instanceof ApiError ? value.message : "Unable to load booking data.";
@@ -54,11 +59,50 @@ export default function BookingPage() {
     if (!selectedSlot) {
       return null;
     }
-    const start = new Date(selectedSlot);
-    const end = new Date(start);
-    end.setMinutes(end.getMinutes() + duration);
-    return { start, end };
+    const selectedStart = new Date(selectedSlot.start_time);
+    const selectedEnd = new Date(selectedSlot.end_time);
+    const meetingStart = new Date(selectedSlot.start_time);
+    const meetingEnd = new Date(meetingStart);
+    meetingEnd.setMinutes(meetingEnd.getMinutes() + duration);
+    return {
+      selectedStart,
+      selectedEnd,
+      meetingStart,
+      meetingEnd,
+    };
   }, [duration, selectedSlot]);
+
+  const selectedSlotLabel = useMemo(() => {
+    if (!selectedPreview) {
+      return null;
+    }
+    return `${selectedPreview.selectedStart.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    })} • ${selectedPreview.selectedStart.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    })} - ${selectedPreview.selectedEnd.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    })}`;
+  }, [selectedPreview]);
+
+  const requestedWindowLabel = useMemo(() => {
+    if (!selectedPreview) {
+      return null;
+    }
+    return `${selectedPreview.meetingStart.toLocaleString([], {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    })} - ${selectedPreview.meetingEnd.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    })}`;
+  }, [selectedPreview]);
 
   async function handleBooking() {
     if (!session?.token || !selectedSlot || !ambassador) {
@@ -68,7 +112,7 @@ export default function BookingPage() {
       setError(null);
       const meeting = await createMeeting(session.token, {
         ambassador_id: ambassador.user_id,
-        start_time: selectedSlot,
+        start_time: selectedSlot.start_time,
         duration_minutes: duration,
         meeting_type: meetingType,
         location: meetingType === "in_person" ? location : undefined,
@@ -102,7 +146,7 @@ export default function BookingPage() {
         {availability ? (
           <BookingCalendar
             slots={availability.slots}
-            selectedSlot={selectedSlot}
+            selectedSlot={selectedSlot?.start_time ?? null}
             onSelectSlot={setSelectedSlot}
           />
         ) : (
@@ -174,9 +218,13 @@ export default function BookingPage() {
 
           {selectedPreview ? (
             <div className="rounded-[22px] bg-white/75 px-4 py-4 text-sm text-[var(--muted)]">
-              Selected start: {selectedPreview.start.toLocaleString()}
-              <br />
-              Selected end: {selectedPreview.end.toLocaleString()}
+              <div className="font-semibold text-[var(--ink)]">Selected slot</div>
+              <div className="mt-1">{selectedSlotLabel}</div>
+              <div className="mt-4 font-semibold text-[var(--ink)]">Booking request</div>
+              <div className="mt-1">
+                {duration}-minute {meetingType === "in_person" ? "in-person" : "virtual"} meeting
+              </div>
+              <div className="mt-1">{requestedWindowLabel}</div>
             </div>
           ) : (
             <div className="rounded-[22px] bg-white/75 px-4 py-4 text-sm text-[var(--muted)]">
@@ -209,4 +257,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
