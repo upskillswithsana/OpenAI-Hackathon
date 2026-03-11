@@ -20,17 +20,25 @@ export function BookingCalendar({
 }: {
   slots: AvailabilitySlot[];
   selectedSlot: string | null;
-  onSelectSlot: (value: string) => void;
+  onSelectSlot: (value: AvailabilitySlot) => void;
 }) {
+  const availableSlotByTime = new Map(
+    slots
+      .filter((slot) => slot.state === "available")
+      .map((slot) => [new Date(slot.start_time).getTime(), slot]),
+  );
+
   const events = slots.map((slot) => ({
     id: slot.start_time,
     title: slot.state,
     start: slot.start_time,
     end: slot.end_time,
-    backgroundColor: COLOR_BY_STATE[slot.state],
+    backgroundColor: slot.start_time === selectedSlot ? "#111315" : COLOR_BY_STATE[slot.state],
     borderColor: slot.start_time === selectedSlot ? "#111315" : COLOR_BY_STATE[slot.state],
     textColor: "#ffffff",
+    classNames: slot.start_time === selectedSlot ? ["booking-slot-selected"] : [],
     extendedProps: {
+      slot,
       state: slot.state,
       reason: slot.reason,
     },
@@ -57,11 +65,20 @@ export function BookingCalendar({
         events={events}
         eventClick={(info) => {
           if (info.event.extendedProps.state === "available") {
-            onSelectSlot(info.event.startStr);
+            onSelectSlot(info.event.extendedProps.slot as AvailabilitySlot);
           }
+        }}
+        dateClick={(info) => {
+          const matchingSlot = availableSlotByTime.get(info.date.getTime());
+          if (matchingSlot) {
+            onSelectSlot(matchingSlot);
+          }
+        }}
+        eventDidMount={(info) => {
+          info.el.style.cursor =
+            info.event.extendedProps.state === "available" ? "pointer" : "not-allowed";
         }}
       />
     </div>
   );
 }
-
