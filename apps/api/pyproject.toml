@@ -1,7 +1,7 @@
 [project]
 name = "ut-ambassador-ai-api"
 version = "0.1.0"
-description = "FastAPI backend for UT AmbassadorAI"
+description = "FastAPI backend for UT Ambassador Connect"
 requires-python = ">=3.12"
 dependencies = [
   "alembic>=1.14.0",
@@ -31,4 +31,5 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+
 

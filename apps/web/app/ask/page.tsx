@@ -78,7 +78,7 @@ export default function AskPage() {
             disabled={loading}
             className="rounded-full bg-[var(--ink)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--accent)] disabled:opacity-60"
           >
-            {loading ? "Generating answer..." : "Ask AmbassadorAI"}
+            {loading ? "Generating answer..." : "Ask Ambassador Connect"}
           </button>
         </div>
       </section>
@@ -153,4 +153,5 @@ export default function AskPage() {
     </div>
   );
 }
+
 

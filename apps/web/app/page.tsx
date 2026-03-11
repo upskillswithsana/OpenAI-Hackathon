@@ -34,7 +34,7 @@ export default function HomePage() {
             AI answers the first question. Ambassadors handle the real one.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">
-            UT AmbassadorAI gives prospective and current students a faster way into campus life:
+            UT Ambassador Connect gives prospective and current students a faster way into campus life:
             grounded answers, matched mentors, and bookable guidance in one product loop.
           </p>
 
@@ -96,4 +96,5 @@ export default function HomePage() {
     </div>
   );
 }
+
 

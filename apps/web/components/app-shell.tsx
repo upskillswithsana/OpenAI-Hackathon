@@ -35,7 +35,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
                 <div>
                   <div className="text-lg font-semibold tracking-tight text-[var(--ink)]">
-                    AmbassadorAI
+                    Ambassador Connect
                   </div>
                   <div className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
                     Hybrid campus guidance
@@ -94,3 +94,4 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+

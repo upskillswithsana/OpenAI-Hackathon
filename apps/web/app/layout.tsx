@@ -17,7 +17,7 @@ const bodyFont = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  title: "UT AmbassadorAI",
+  title: "UT Ambassador Connect",
   description: "AI campus Q&A and student ambassador booking for UT Austin.",
 };
 
@@ -36,3 +36,4 @@ export default function RootLayout({
     </html>
   );
 }
+

@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    app_name: str = "UT AmbassadorAI API"
+    app_name: str = "UT Ambassador Connect API"
     app_env: str = "development"
     secret_key: str = "hackathon-secret"
     database_url: str = "sqlite:///./ambassador_ai.db"
@@ -33,4 +33,5 @@ def get_settings() -> Settings:
     settings.chroma_persist_directory.mkdir(parents=True, exist_ok=True)
     settings.uploads_directory.mkdir(parents=True, exist_ok=True)
     return settings
+
 
