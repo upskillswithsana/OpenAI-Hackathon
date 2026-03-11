@@ -30,18 +30,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
               <Link href="/" className="flex items-center gap-3">
-                <div className="flex h-12 min-w-12 items-center justify-center rounded-2xl bg-[var(--accent)] px-2 text-[10px] font-semibold leading-tight text-white">UT Austin</div>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#8c3f00] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.2)]">
+                  <img src="/ut-tower.svg" alt="UT Tower" className="h-8 w-8" />
+                </div>
                 <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[rgba(255,245,236,0.95)]">
+                    UT Austin
+                  </div>
                   <div className="text-lg font-semibold tracking-tight text-[var(--ink)]">
                     Ambassador Connect
                   </div>
-                  <div className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
+                  <div className="text-xs uppercase tracking-[0.24em] text-[rgba(55,33,16,0.82)]">
                     Hybrid campus guidance
                   </div>
                 </div>
               </Link>
               {session ? (
-                <span className="hidden rounded-full border border-[var(--line)] px-3 py-1 text-xs font-medium text-[var(--muted)] sm:inline-flex">
+                <span className="hidden rounded-full border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.2)] px-3 py-1 text-xs font-medium text-[var(--ink)] sm:inline-flex">
                   Active role: {roleLabel(session.user.role)}
                 </span>
               ) : null}
@@ -57,7 +62,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       "rounded-full px-3 py-2 text-sm transition-colors",
                       pathname === item.href
                         ? "bg-[var(--ink)] text-white"
-                        : "text-[var(--ink)] hover:bg-[var(--paper-strong)]",
+                        : "text-[var(--ink)] hover:bg-[rgba(255,255,255,0.35)]",
                     )}
                   >
                     {item.label}
@@ -65,7 +70,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 ))}
               </nav>
 
-              <label className="flex items-center gap-3 rounded-full border border-[var(--line)] bg-white/70 px-3 py-2 text-sm text-[var(--muted)]">
+              <label className="flex items-center gap-3 rounded-full border border-[rgba(255,255,255,0.35)] bg-[rgba(255,255,255,0.35)] px-3 py-2 text-sm text-[var(--ink)]">
                 <span className="font-medium text-[var(--ink)]">Demo login</span>
                 <select
                   className="min-w-56 bg-transparent text-[var(--ink)] outline-none"
@@ -92,7 +97,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-
-
-

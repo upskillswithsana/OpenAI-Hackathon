@@ -8,7 +8,8 @@ import type {
   UserSummary,
 } from "@/lib/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api";
+// Local demo default: call FastAPI directly on host machine.
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 type RequestOptions = RequestInit & {
   token?: string | null;

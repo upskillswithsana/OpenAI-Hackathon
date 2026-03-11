@@ -48,9 +48,9 @@ h4 {
 }
 
 .glass-panel {
-  background: rgba(255, 251, 247, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  box-shadow: 0 20px 45px rgba(71, 45, 18, 0.08);
+  background: linear-gradient(135deg, rgba(191, 87, 0, 0.9), rgba(156, 66, 0, 0.86));
+  border: 1px solid rgba(255, 214, 184, 0.9);
+  box-shadow: 0 22px 48px rgba(84, 31, 0, 0.36);
 }
 
 .surface-card {
@@ -117,3 +117,5 @@ h4 {
 .fc .fc-event.booking-slot-selected {
   box-shadow: 0 0 0 3px rgba(17, 19, 21, 0.22);
 }
+
+

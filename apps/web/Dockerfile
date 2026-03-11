@@ -9,6 +9,8 @@ RUN npm install
 FROM node:20-alpine AS builder
 WORKDIR /app
 
+ENV NEXT_PUBLIC_API_BASE_URL=/api
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY package*.json ./
 COPY apps/web ./apps/web
@@ -20,6 +22,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_API_BASE_URL=/api
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./

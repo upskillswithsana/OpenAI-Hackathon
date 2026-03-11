@@ -14,57 +14,75 @@ const HOP_BY_HOP_HEADERS = [
   "upgrade",
 ];
 
-function getApiBaseUrl() {
-  const apiBaseUrl = process.env.API_BASE_URL?.trim().replace(/\/$/, "");
-
-  if (!apiBaseUrl) {
-    throw new Error("API_BASE_URL is not configured.");
-  }
-
-  return apiBaseUrl;
+function getApiBaseUrls() {
+  const configured = process.env.API_BASE_URL?.trim().replace(/\/$/, "");
+  const candidates = [configured, "http://api:8000", "http://host.docker.internal:8000"];
+  const urls = candidates.filter((value): value is string => Boolean(value));
+  return [...new Set(urls)];
 }
 
-function buildTargetUrl(request: NextRequest, path: string[]) {
+function buildTargetUrl(request: NextRequest, path: string[], apiBaseUrl: string) {
   const pathname = path.join("/");
-  const url = new URL(`${getApiBaseUrl()}/${pathname}`);
+  const url = new URL(`${apiBaseUrl}/${pathname}`);
   url.search = request.nextUrl.search;
   return url;
 }
 
 async function proxyRequest(request: NextRequest, path: string[]) {
-  let target: URL;
-
-  try {
-    target = buildTargetUrl(request, path);
-  } catch (error) {
-    return Response.json(
-      {
-        detail:
-          error instanceof Error ? error.message : "API proxy configuration is invalid.",
-      },
-      { status: 500 },
-    );
+  const apiBaseUrls = getApiBaseUrls();
+  if (apiBaseUrls.length === 0) {
+    return Response.json({ detail: "API proxy configuration is invalid." }, { status: 500 });
   }
 
   const headers = new Headers(request.headers);
   HOP_BY_HOP_HEADERS.forEach((header) => headers.delete(header));
   headers.set("x-forwarded-host", request.headers.get("host") ?? "");
 
-  const response = await fetch(target, {
-    method: request.method,
-    headers,
-    body: request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer(),
-    redirect: "manual",
-  });
+  const body =
+    request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer();
 
-  const responseHeaders = new Headers(response.headers);
-  HOP_BY_HOP_HEADERS.forEach((header) => responseHeaders.delete(header));
+  let lastError: unknown = null;
 
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers: responseHeaders,
-  });
+  for (const apiBaseUrl of apiBaseUrls) {
+    let target: URL;
+
+    try {
+      target = buildTargetUrl(request, path, apiBaseUrl);
+    } catch (error) {
+      lastError = error;
+      continue;
+    }
+
+    try {
+      const response = await fetch(target, {
+        method: request.method,
+        headers,
+        body,
+        redirect: "manual",
+      });
+
+      const responseHeaders = new Headers(response.headers);
+      HOP_BY_HOP_HEADERS.forEach((header) => responseHeaders.delete(header));
+
+      return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers: responseHeaders,
+      });
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  return Response.json(
+    {
+      detail:
+        lastError instanceof Error
+          ? `API proxy request failed: ${lastError.message}`
+          : "API proxy request failed.",
+    },
+    { status: 500 },
+  );
 }
 
 type RouteContext = {
