@@ -1,7 +1,7 @@
 # UT Ambassador Connect
 
 UT Ambassador Connect is a demo-first hackathon MVP that combines AI campus Q&A, ambassador recommendations, and structured booking between students and UT Austin ambassadors.
-<img width="1234" height="765" alt="image" src="https://github.com/user-attachments/assets/a4065a38-7472-4f3c-8ad7-2544724016e5" />
+![Latest UI](docs/latest-ui.png)
 
 ## Workspace
 
@@ -64,4 +64,5 @@ The MVP uses demo login instead of real OAuth.
 - If `OPENAI_API_KEY` is not configured, the API falls back to deterministic local embeddings and answer generation so the demo still works.
 - If `CHROMA_HOST` is not configured, embeddings are stored in a local persistent Chroma directory under `apps/api/.chroma`.
 - Meeting links are generated only for confirmed virtual meetings and use a demo URL format.
+
 
