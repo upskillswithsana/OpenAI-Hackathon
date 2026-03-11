@@ -1,0 +1,34 @@
+[project]
+name = "ut-ambassador-ai-api"
+version = "0.1.0"
+description = "FastAPI backend for UT AmbassadorAI"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic>=1.14.0",
+  "chromadb>=0.5.5",
+  "fastapi>=0.115.0",
+  "itsdangerous>=2.2.0",
+  "openai>=1.52.0",
+  "pydantic-settings>=2.6.0",
+  "psycopg[binary]>=3.2.0",
+  "python-multipart>=0.0.12",
+  "sqlalchemy>=2.0.36",
+  "uvicorn[standard]>=0.32.0"
+]
+
+[dependency-groups]
+dev = [
+  "httpx>=0.28.0",
+  "pytest>=8.3.0",
+  "pytest-cov>=6.0.0",
+  "pytest-mock>=3.14.0"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
