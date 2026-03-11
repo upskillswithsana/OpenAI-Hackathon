@@ -1,6 +1,7 @@
 # UT AmbassadorAI
 
 UT AmbassadorAI is a demo-first hackathon MVP that combines AI campus Q&A, ambassador recommendations, and structured booking between students and UT Austin ambassadors.
+<img width="1234" height="765" alt="image" src="https://github.com/user-attachments/assets/a4065a38-7472-4f3c-8ad7-2544724016e5" />
 
 ## Workspace
 
