@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ut-ambassador-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ambassador_ai
+      POSTGRES_USER: ambassador_ai
+      POSTGRES_PASSWORD: ambassador_ai
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  chroma:
+    image: chromadb/chroma:0.5.5
+    container_name: ut-ambassador-chroma
+    restart: unless-stopped
+    environment:
+      IS_PERSISTENT: "TRUE"
+      PERSIST_DIRECTORY: /chroma/chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+volumes:
+  postgres_data:
+  chroma_data:
+

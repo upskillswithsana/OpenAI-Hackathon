@@ -1,0 +1,21 @@
+{
+  "name": "ut-ambassador-ai",
+  "private": true,
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c cyan,green \"npm run dev --workspace web\" \"cd apps/api && uv run uvicorn app.main:app --reload\"",
+    "dev:web": "npm run dev --workspace web",
+    "dev:api": "cd apps/api && uv run uvicorn app.main:app --reload",
+    "build:web": "npm run build --workspace web",
+    "preview:web": "npm run preview --workspace web",
+    "deploy:web": "npm run deploy --workspace web",
+    "lint:web": "npm run lint --workspace web",
+    "test:api": "cd apps/api && uv run pytest",
+    "seed:api": "cd apps/api && uv run python -m app.scripts.seed_demo"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
