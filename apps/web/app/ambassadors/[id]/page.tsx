@@ -18,12 +18,47 @@ export default function AmbassadorProfilePage() {
     if (!session?.token || !params.id) {
       return;
     }
-    void fetchAmbassador(session.token, params.id)
-      .then(setAmbassador)
-      .catch((value) => {
+    const token = session.token;
+    const ambassadorId = params.id;
+
+    let disposed = false;
+
+    async function loadAmbassador() {
+      try {
+        const result = await fetchAmbassador(token, ambassadorId);
+        if (disposed) {
+          return;
+        }
+        setAmbassador(result);
+        setError(null);
+      } catch (value) {
+        if (disposed) {
+          return;
+        }
         const message = value instanceof ApiError ? value.message : "Unable to load profile.";
         setError(message);
-      });
+      }
+    }
+
+    function handleFocusRefresh() {
+      void loadAmbassador();
+    }
+
+    function handleVisibilityRefresh() {
+      if (document.visibilityState === "visible") {
+        void loadAmbassador();
+      }
+    }
+
+    void loadAmbassador();
+    window.addEventListener("focus", handleFocusRefresh);
+    document.addEventListener("visibilitychange", handleVisibilityRefresh);
+
+    return () => {
+      disposed = true;
+      window.removeEventListener("focus", handleFocusRefresh);
+      document.removeEventListener("visibilitychange", handleVisibilityRefresh);
+    };
   }, [params.id, session?.token]);
 
   if (error) {
@@ -110,4 +145,3 @@ export default function AmbassadorProfilePage() {
     </div>
   );
 }
-
